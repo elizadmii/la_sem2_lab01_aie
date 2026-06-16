@@ -76,7 +76,7 @@ class DenseTensor:
 
         return DenseTensor(shape, data)
 
-       @staticmethod
+    @staticmethod
     def from_nested_list(nested: list) -> DenseTensor:
         """
         Создаёт тензор из вложенного списка Python.
