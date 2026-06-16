@@ -221,4 +221,4 @@ class TTTensor:
         )
 
     def __str__(self) -> str:
-        return self.__repr__()
+        return self.__repr__() 

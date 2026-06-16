@@ -255,4 +255,4 @@ def tt_diff_norm(
 
     value = dot11 + dot22 - 2.0 * dot12
 
-    return math.sqrt(max(0.0, value))
+    return math.sqrt(max(0.0, value)) 

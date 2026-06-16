@@ -348,7 +348,7 @@ def _svd_wide(
             v_rows.append(v)
         else:
             v_rows.append(None)
-
+ 
     # Дополняем/ортонормируем V
     v_rows_final: list[list[float]] = _orthonormalize_vectors(v_rows, n, tol)
 

@@ -249,7 +249,7 @@ def _multiply_columns_by_diag(
     Считает matrix @ diag(diag_vec).
     """
     _ = backend
-
+ 
     if matrix.ndim != 2:
         raise ValueError("matrix must be 2D")
 

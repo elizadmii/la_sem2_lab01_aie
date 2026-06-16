@@ -124,4 +124,4 @@ class CPUBackend(BackendInterface):
         value: float
     ) -> DenseTensor:
         tensor[tuple(indices)] = value
-        return tensor
+        return tensor 

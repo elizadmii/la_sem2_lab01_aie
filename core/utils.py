@@ -118,4 +118,4 @@ def check_shapes_match(
     Проверяет совпадение форм двух тензоров.
     """
     if shape1 != shape2:
-        raise ValueError(f"shapes do not match: {shape1} != {shape2}")
+        raise ValueError(f"shapes do not match: {shape1} != {shape2}") 

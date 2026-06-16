@@ -242,4 +242,4 @@ def _multiply_diag_matrix(
         for j in range(cols):
             result[i, j] = diag_vec[i] * matrix[i, j]
 
-    return result
+    return result 
