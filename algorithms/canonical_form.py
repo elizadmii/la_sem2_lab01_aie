@@ -69,19 +69,33 @@ def right_canonicalize(tt: TTTensor, backend: BackendInterface) -> TTTensor:
         core = cores[k]
         r_left, n, r_right = core.shape
 
-        # Для правой ортогонализации нужна RQ.
-        # Делаем её через QR от транспонированной матрицы.
         matrix = backend.reshape(core, (r_left, n * r_right))
         matrix_t = backend.transpose(matrix)
 
-        Q_t, R_t = backend.qr(matrix_t)
+        if matrix_t.shape[0] >= matrix_t.shape[1]:
+            # Обычный случай: делаем RQ через QR от transpose
+            Q_t, R_t = backend.qr(matrix_t)
 
-        Q = backend.transpose(Q_t)
-        R = backend.transpose(R_t)
+            Q = backend.transpose(Q_t)
+            R = backend.transpose(R_t)
 
-        new_rank = Q.shape[0]
+            new_rank = Q.shape[0]
 
-        # Q обратно превращаем в TT-ядро
+        else:
+            # Если QR нельзя, потому что матрица широкая,
+            # используем SVD: matrix = U diag(S) Vt.
+            U, S, Vt = backend.svd(matrix, full_matrices=False)
+
+            new_rank = S.size
+            Q = Vt
+
+            # R = U @ diag(S), то есть умножаем столбцы U на S
+            R = DenseTensor.zeros((r_left, new_rank))
+
+            for i in range(r_left):
+                for j in range(new_rank):
+                    R[i, j] = U[i, j] * S[j]
+
         cores[k] = backend.reshape(Q, (new_rank, n, r_right))
 
         # R поглощаем в предыдущее ядро

@@ -21,9 +21,6 @@ def tt_svd(
     """
     Возвращает TTTensor — тензор в TT-формате.
     """
-    if not isinstance(tensor, DenseTensor):
-        raise TypeError("tensor must be DenseTensor")
-
     if max_rank is not None and max_rank < 1:
         raise ValueError("max_rank must be positive")
 

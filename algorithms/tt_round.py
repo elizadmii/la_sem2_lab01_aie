@@ -21,8 +21,6 @@ def tt_round(
     """
     Возвращает новый TT-тензор с уменьшенными рангами.
     """
-    if not isinstance(tt, TTTensor):
-        raise TypeError("tt must be TTTensor")
 
     if max_rank is not None and max_rank < 1:
         raise ValueError("max_rank must be positive")

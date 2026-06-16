@@ -76,10 +76,18 @@ class DenseTensor:
 
         return DenseTensor(shape, data)
 
-    @staticmethod
+       @staticmethod
     def from_nested_list(nested: list) -> DenseTensor:
-        def get_shape(obj: list) -> tuple[int, ...]:
-            if not isinstance(obj, list):
+        """
+        Создаёт тензор из вложенного списка Python.
+        Автоматически определяет shape.
+        """
+
+        def is_sequence(obj) -> bool:
+            return isinstance(obj, (list, tuple))
+
+        def get_shape(obj) -> tuple[int, ...]:
+            if not is_sequence(obj):
                 return ()
 
             if len(obj) == 0:
@@ -93,22 +101,21 @@ class DenseTensor:
 
             return (len(obj),) + first_shape
 
-        def flatten(obj: list, result: list[float]) -> None:
-            if isinstance(obj, list):
+        def flatten(obj, result: list[float]) -> None:
+            if is_sequence(obj):
                 for item in obj:
                     flatten(item, result)
             else:
                 result.append(float(obj))
 
-        if not isinstance(nested, list):
-            raise TypeError("nested must be a list")
+        if not is_sequence(nested):
+            raise TypeError("nested must be a list or tuple")
 
         shape = get_shape(nested)
         data = []
         flatten(nested, data)
 
         return DenseTensor(shape, data)
-
     def _validate_index(
         self,
         multi_index: tuple[int, ...] | int
