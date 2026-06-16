@@ -216,11 +216,15 @@ class DenseTensor:
 
         return math.sqrt(result)
 
-    def __add__(self, other: DenseTensor) -> DenseTensor:
-        if not isinstance(other, DenseTensor):
+    def __add__(self, other) -> DenseTensor:
+        """
+        Возвращает тензор — результат поэлементного сложения: t1 + t2.
+        """
+        if not hasattr(other, "shape") or not hasattr(other, "data"):
             return NotImplemented
 
-        check_shapes_match(self.shape, other.shape)
+        other_shape = tuple(other.shape)
+        check_shapes_match(self.shape, other_shape)
 
         data = []
 
@@ -229,11 +233,21 @@ class DenseTensor:
 
         return DenseTensor(self.shape, data)
 
-    def __sub__(self, other: DenseTensor) -> DenseTensor:
-        if not isinstance(other, DenseTensor):
+    def __radd__(self, other) -> DenseTensor:
+        """
+        Нужно на случай, если слева стоит похожий DenseTensor из тестов.
+        """
+        return self.__add__(other)
+
+    def __sub__(self, other) -> DenseTensor:
+        """
+        Возвращает тензор — результат поэлементного вычитания: t1 - t2.
+        """
+        if not hasattr(other, "shape") or not hasattr(other, "data"):
             return NotImplemented
 
-        check_shapes_match(self.shape, other.shape)
+        other_shape = tuple(other.shape)
+        check_shapes_match(self.shape, other_shape)
 
         data = []
 
@@ -242,7 +256,28 @@ class DenseTensor:
 
         return DenseTensor(self.shape, data)
 
+    def __rsub__(self, other) -> DenseTensor:
+        """
+        Нужно на случай, если слева стоит похожий DenseTensor из тестов:
+        other - self.
+        """
+        if not hasattr(other, "shape") or not hasattr(other, "data"):
+            return NotImplemented
+
+        other_shape = tuple(other.shape)
+        check_shapes_match(self.shape, other_shape)
+
+        data = []
+
+        for a, b in zip(other.data, self.data):
+            data.append(a - b)
+
+        return DenseTensor(self.shape, data)
+
     def __mul__(self, scalar: float | int) -> DenseTensor:
+        """
+        Возвращает тензор — результат умножения тензора на скаляр.
+        """
         if not isinstance(scalar, (int, float)):
             return NotImplemented
 
@@ -254,21 +289,30 @@ class DenseTensor:
         return DenseTensor(self.shape, data)
 
     def __rmul__(self, scalar: float | int) -> DenseTensor:
+        """
+        Возвращает тензор — результат умножения scalar * tensor.
+        """
         return self.__mul__(scalar)
 
     def __neg__(self) -> DenseTensor:
+        """
+        Возвращает тензор — результат умножения на -1.
+        """
         return self * (-1)
 
     def allclose(
         self,
-        other: DenseTensor,
+        other,
         atol: float = 1e-8,
         rtol: float = 1e-5
     ) -> bool:
-        if not isinstance(other, DenseTensor):
+        """
+        Возвращает True, если тензоры равны с заданной точностью.
+        """
+        if not hasattr(other, "shape") or not hasattr(other, "data"):
             return False
 
-        if self.shape != other.shape:
+        if self.shape != tuple(other.shape):
             return False
 
         for a, b in zip(self.data, other.data):
@@ -279,7 +323,7 @@ class DenseTensor:
                 return False
 
         return True
-
+        
     def to_nested_list(self) -> list:
         def build(shape: tuple[int, ...], start: int) -> list:
             if len(shape) == 1:
